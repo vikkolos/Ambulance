@@ -1,11 +1,12 @@
 import UserLogin from "./pages/UserLogin"
-
+import DriverLogin from "./pages/DriverLogin"
+import UserInfoProvider from "./context/UserInfoProvider"
 function App() {
 
   return (
-    <>
-      <UserLogin />
-    </>
+    <UserInfoProvider>
+     <UserLogin/>
+    </UserInfoProvider>
   )
 }
 
