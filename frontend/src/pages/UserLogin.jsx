@@ -2,17 +2,14 @@ import React, { useState,useContext } from 'react'
 import { FaAngleLeft } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { FaGoogleWallet } from "react-icons/fa";
-import { userInfo } from '../context/ContextUserinfo';
+import  {userInfo}  from '../context/UserInfoProvider';
 
 
 function UserLogin() {
 
   const [hasAccount, setHasAccount] = useState(false);
   const [userPassword,setUserPassword ]= useState("");
-  const {setUserEmail}=useContext(userInfo)
-  const {setUserName}=useContext(userInfo)
-  const {userEmail}=useContext(userInfo)
-  const {userName}=useContext(userInfo)
+  const {setUserEmail,setUserName,userEmail,userName}=useContext(userInfo);
 
 
 
@@ -20,12 +17,12 @@ function UserLogin() {
   const toggleUserAccount = () => {
     setHasAccount(!hasAccount);
   }
-//  const loggingConsole = (e)=> {
-//   e.preventDefault()
-//   console.log(userName)
-//   console.log(userEmail)
-//   console.log(userPassword)
-//  }
+ const handlerSubmit = (e)=> {
+  e.preventDefault()
+  console.log(userName)
+  console.log(userEmail)
+  console.log(userPassword)
+ }
   return (
     <>
         <div className="inset-0 fixed flex flex-col items-start justify-center h-screen w-screen overflow-hidden">
@@ -41,7 +38,7 @@ function UserLogin() {
 
             {/* This form or new user(patient) registration page which allows to create an account as a patient. */}
 
-            <form className={`${hasAccount && 'translate-y-[100%] opacity-0 '}  px-5 py-3 rounded-md bg-white h-[79%] w-[94%] absolute left-1/2 bottom-[2%] translate-x-[-50%] z-10} transition-all duration-500 ease-in-out`}>
+            <form className={`${hasAccount && 'translate-y-[100%] opacity-0 '}  px-5 py-3 rounded-md bg-white h-[75%] w-[94%] absolute left-1/2 bottom-[2%] translate-x-[-50%] z-10} transition-all duration-500 ease-in-out`}>
                   <p className='p-1 mt-3 font-semibold text-[#646464]'>Name</p>
                   <input className='bg-[#f0f0f07b] font-[300px] text-[#363535e0] w-full rounded-md px-3 py-1.5'  type="text" placeholder='Enter FullName' value={userName} onChange={(e)=>setUserName(e.target.value)} required/>
                   <p className='mt-2 p-1  font-semibold text-[#646464]'>Email</p>
@@ -49,7 +46,7 @@ function UserLogin() {
                   <p className='mt-2 p-1  font-semibold text-[#646464]'>Password</p>
                   <input  className='bg-[#f0f0f07b] font-[300px] text-[#363535e0] w-full rounded-md px-3 py-1.5' type="password" placeholder='Enter password' value={userPassword} onChange={(e)=>setUserPassword(e.target.value)} required/>
                   <button className='cursor-pointer w-full font-semibold p-2 mt-8 bg-[#00BCD4] text-white rounded-sm'
-                  //  onClick={loggingConsole}
+                   onClick={handlerSubmit}
                    >Create Account</button>
                           <div className='flex items-center justify-between mt-4'>
                             <span className='w-[45%] h-[1px] bg-[#9a9696]'></span>
@@ -65,7 +62,7 @@ function UserLogin() {
 
             {/* This form or user(patient) login page which allows to login an account as a patient. */}
 
-            <form className={`${!hasAccount && 'translate-y-[100%] opacity-0 '} px-5 py-3 rounded-md bg-white h-[79%] w-[94%] absolute left-1/2 bottom-[2%] translate-x-[-50%] z-10} transition-all duration-500 ease-in-out`}>
+            <form className={`${!hasAccount && 'translate-y-[100%] opacity-0 '} px-5 py-3 rounded-md bg-white h-[75%] w-[94%] absolute left-1/2 bottom-[2%] translate-x-[-50%] z-10} transition-all duration-500 ease-in-out`}>
                 
                 <p className='mt-3 p-1  font-semibold text-[#646464]'>Email</p>
                 <input className='bg-[#f0f0f07b] font-[300px] text-[#363535e0] w-full rounded-md px-3 py-1.5'  type="email" placeholder='xyz@gmail.com' required

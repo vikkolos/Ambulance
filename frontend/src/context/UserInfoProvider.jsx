@@ -1,5 +1,8 @@
-import React, { useState } from 'react'
-import { userInfo } from './ContextUserinfo'
+import React, { useState,createContext } from 'react'
+
+export const userInfo = createContext();
+
+
 function UserInfoProvider({children}) {
     const [userName,setUserName]= useState("");
     const [userEmail,setUserEmail ]= useState("");
@@ -10,4 +13,4 @@ function UserInfoProvider({children}) {
   )
 }
 
-export default UserInfoProvider
+export default UserInfoProvider;
