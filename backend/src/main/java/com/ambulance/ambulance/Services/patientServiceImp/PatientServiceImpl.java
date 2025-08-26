@@ -7,17 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("patientDetailsService")
 public class PatientServiceImpl implements PatientService, UserDetailsService {
 
-    @Autowired
-    private PatientRepositoryImp patientRepositoryImp;
+    private final PatientRepositoryImp patientRepositoryImp;
+    private final PasswordEncoder passwordEncoder;
 
-    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    public PatientServiceImpl(PatientRepositoryImp patientRepositoryImp,
+                              PasswordEncoder passwordEncoder) {
+        this.patientRepositoryImp = patientRepositoryImp;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+
+
 
     @Override
     public Patient createPatient(Patient patient) {
@@ -26,18 +33,18 @@ public class PatientServiceImpl implements PatientService, UserDetailsService {
     }
 
     @Override
-    public Patient getPatient(String email){
+    public Patient getPatient(String email) {
         return patientRepositoryImp.findPatientByEmail(email);
     }
-
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Patient patient = patientRepositoryImp.findPatientByEmail(email);
         if(patient != null){
             return org.springframework.security.core.userdetails.User.builder()
-                    .username(patient.getFullName())
+                    .username(patient.getEmail())
                     .password(patient.getPassword())
+                    .roles("PATIENT")
                     .build();
         }
         throw new UsernameNotFoundException("User not found with email "+email);

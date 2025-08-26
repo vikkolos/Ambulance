@@ -12,12 +12,10 @@ public class Patient {
 
     @Id
     private String id;
-    @NonNull
     private String fullName;
-    @NonNull
     private String email;
-    @NonNull
     private String password;
+    private String role;
 
     public String getId() {
         return id;
@@ -49,5 +47,12 @@ public class Patient {
 
     public void setPassword(@NonNull String password) {
         this.password = password;
+    }
+    public @NonNull String getRole() {
+        return role;
+    }
+
+    public void setRole(@NonNull String role) {
+        this.role = role;
     }
 }

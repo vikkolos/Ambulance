@@ -2,7 +2,6 @@ package com.ambulance.ambulance.controllers;
 
 
 import com.ambulance.ambulance.Services.PatientService;
-import com.ambulance.ambulance.Services.patientServiceImp.PatientServiceImpl;
 import com.ambulance.ambulance.entities.Patient;
 
 import com.ambulance.ambulance.utils.Jwtutility;
@@ -11,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,13 +20,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/patient")
-public class PublicController {
+public class PublicPatientController {
 
     @Autowired
     private PatientService patientService;
 
-    @Autowired
-    private PatientServiceImpl patientServiceImpl;
 
     @Autowired
     private Jwtutility jwtutil;
@@ -37,9 +33,17 @@ public class PublicController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/signup")
-    public ResponseEntity<Patient> signup(@RequestBody Patient patient) {
+    public ResponseEntity<?> signup(@RequestBody Patient patient) {
+        Patient isPatientExist = patientService.getPatient(patient.getEmail());
+        if(isPatientExist != null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exist");
+        }
         Patient patientResponse = patientService.createPatient(patient);
-        return ResponseEntity.status(HttpStatus.CREATED).body(patientResponse);
+        String jwt = jwtutil.generateToken(patientResponse.getEmail());
+        Map<String,Object> responseData = new HashMap<>();
+        responseData.put("jwt",jwt);
+        responseData.put("Patient",patientResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
     }
 
     @PostMapping("/login")
@@ -48,16 +52,17 @@ public class PublicController {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(patient.getEmail(), patient.getPassword())
             );
-            Patient exixtingPatient =patientServiceImpl.getPatient(patient.getEmail());
-            String jwt = jwtutil.generateToken(exixtingPatient.getFullName());
-            Map<String,Object> responseData = new HashMap<>();
-            responseData.put("jwt",jwt);
-            responseData.put("Patient",exixtingPatient);
+
+            Patient existingPatient = patientService.getPatient(patient.getEmail());
+            String jwt = jwtutil.generateToken(existingPatient.getEmail());
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("jwt", jwt);
+            responseData.put("patient", existingPatient);
 
             return ResponseEntity.ok(responseData);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Incorrect username or password");
+                    .body(Map.of("error", "Incorrect email or password"));
         }
     }
 }

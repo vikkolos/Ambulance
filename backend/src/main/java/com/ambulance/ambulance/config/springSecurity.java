@@ -1,57 +1,62 @@
 package com.ambulance.ambulance.config;
 
-
-import com.ambulance.ambulance.Services.patientServiceImp.PatientServiceImpl;
-import com.ambulance.ambulance.repositories.PatientRepositoryImp;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class springSecurity  {
-
-    @Autowired
-    private PatientServiceImpl patientService;
+public class springSecurity{
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/patienkts/**").authenticated()
+//                        .requestMatchers("/patients/**").hasRole("PATIENT")
+//                        .requestMatchers("/drivers/**").hasRole("DRIVER")
                         .anyRequest().permitAll()
                 )
-                     .httpBasic(Customizer.withDefaults());
+                .httpBasic(Customizer.withDefaults());
         return http.build();
-
-    }
-
-
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-        auth.userDetailsService(patientService).passwordEncoder(passwordEncoder());
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration auth) throws Exception {
-        return auth.getAuthenticationManager();
+    public DaoAuthenticationProvider patientAuthenticationProvider(UserDetailsService patientDetailsService,
+                                                                   PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(patientDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
     }
 
-}
+    @Bean
+    public DaoAuthenticationProvider driverAuthenticationProvider(UserDetailsService driverDetailsService,
+                                                                  PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(driverDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
+    }
 
+    @Bean
+    public AuthenticationManager authenticationManager(DaoAuthenticationProvider patientAuthenticationProvider,
+                                                       DaoAuthenticationProvider driverAuthenticationProvider) {
+        return new ProviderManager(patientAuthenticationProvider, driverAuthenticationProvider);
+    }
+}
