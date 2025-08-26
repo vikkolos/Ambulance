@@ -1,27 +1,27 @@
 package com.ambulance.ambulance.repositories;
 
-import com.ambulance.ambulance.entities.Patient;
+
+import com.ambulance.ambulance.entities.Driver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-
-
+import org.springframework.stereotype.Repository;
 
 @Repository
-public class PatientRepositoryImp {
+public class DriverRepositoryImp {
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public Patient savePatient(Patient patient){
-        Patient savedPatient = mongoTemplate.save(patient);
-        return savedPatient;
+    public Driver saveDriver(Driver driver){
+        return mongoTemplate.save(driver);
     }
-    public Patient findPatientByEmail(String email) {
+
+    public Driver findDriverByEmail(String email){
         Query query = new Query();
         query.addCriteria(Criteria.where("email").is(email));
-        return mongoTemplate.findOne(query, Patient.class);
+        return mongoTemplate.findOne(query,Driver.class);
     }
+
 }
