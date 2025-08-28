@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service("patientDetailsService")
 public class PatientServiceImpl implements PatientService, UserDetailsService {
 
@@ -29,6 +31,7 @@ public class PatientServiceImpl implements PatientService, UserDetailsService {
     @Override
     public Patient createPatient(Patient patient) {
         patient.setPassword(passwordEncoder.encode(patient.getPassword()));
+        patient.setTime(LocalDateTime.now());
         return patientRepositoryImp.savePatient(patient);
     }
 

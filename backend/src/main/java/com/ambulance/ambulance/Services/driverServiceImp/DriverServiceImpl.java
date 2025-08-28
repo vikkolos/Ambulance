@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service("driverDetailsService")
 public class DriverServiceImpl implements DriverService, UserDetailsService {
 
@@ -28,6 +30,7 @@ public class DriverServiceImpl implements DriverService, UserDetailsService {
     @Override
     public Driver createDriver(Driver driver) {
         driver.setPassword(passwordEncoder.encode(driver.getPassword()));
+        driver.setTime(LocalDateTime.now());
         return driverRepositoryImp.saveDriver(driver);
     }
 

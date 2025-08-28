@@ -5,6 +5,8 @@ import lombok.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 
 @Document(collection = "driver-entries")
 public class Driver {
@@ -17,9 +19,27 @@ public class Driver {
     private String vehicalNumber;
     private String licence;
     private String role;
+    private String aadhar;
+    private LocalDateTime time;
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
 
     public @NonNull String getVehicalNumber() {
         return vehicalNumber;
+    }
+
+    public String getAadhar() {
+        return aadhar;
+    }
+
+    public void setAadhar(String aadhar) {
+        this.aadhar = aadhar;
     }
 
     public void setVehicalNumber(@NonNull String carNumber) {

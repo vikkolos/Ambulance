@@ -13,7 +13,7 @@ function UserLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { setUserEmail, setUserName } = useContext(userInfo);
+  const { setUserEmail, setUserName ,setRole} = useContext(userInfo);
   const navigate = useNavigate();
 
   const [error, setError] = useState('');
@@ -34,6 +34,13 @@ function UserLogin() {
       password,
       role : 'PATIENT'
     };
+    if(fullName.trim() === '' || email.trim() === '' || password.trim() === ''){
+      setError("All fields are required");
+      return;
+    }else if(password.length < 3){
+      setError("Password must be at least 3 characters"); 
+      return;
+    }
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/patient/signup`, formData, {
         headers: {
@@ -47,15 +54,16 @@ function UserLogin() {
       if (Patient) {
         setUserName(Patient.fullName);
         setUserEmail(Patient.email);
+        setRole(Patient.role);
       }
       if (token) {
         localStorage.setItem('token', token);
       }
       navigate('/home');
 
-      console.log('Registration successful:', response);
+      // console.log('Registration successful:', response);
     } catch (error) {
-      setError(error.response.data);
+      setError(error.response.data.error);
       console.error('Error during registration:', error);
     }
   }
@@ -67,19 +75,24 @@ function UserLogin() {
       email,
       password
     };
+    if(email.trim() === '' || password.trim() === ''){
+      setError("All fields are required");
+      return;
+    }
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/patient/login`, formData, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      console.log('Login successful:', response);
+      // console.log('Login successful:', response);
       setEmail('');
       setPassword('');
       const { jwt: token, Patient } = response.data;
       if (Patient) {
         setUserName(Patient.fullName);
         setUserEmail(Patient.email);
+        setRole(Patient.role);
       }
 
       if (token) {

@@ -33,7 +33,7 @@ public class PublicDriverController {
     public ResponseEntity<?> signup(@RequestBody Driver driver){
             Driver isDriverExist = driverService.getDriver(driver.getEmail());
             if(isDriverExist != null){
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error" , "User already exist"));
             }
             Driver driverResponse = driverService.createDriver(driver);
             String jwt = jwtutil.generateToken(driverResponse.getEmail());

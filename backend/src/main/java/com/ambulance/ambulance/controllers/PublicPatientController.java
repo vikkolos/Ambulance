@@ -36,7 +36,7 @@ public class PublicPatientController {
     public ResponseEntity<?> signup(@RequestBody Patient patient) {
         Patient isPatientExist = patientService.getPatient(patient.getEmail());
         if(isPatientExist != null){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exist");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error" , "User already exist"));
         }
         Patient patientResponse = patientService.createPatient(patient);
         String jwt = jwtutil.generateToken(patientResponse.getEmail());
